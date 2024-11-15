@@ -1,0 +1,157 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 db.createCollection("Students");\
+\
+db.Students.insertMany([\
+  \{\
+    student_id: 1,\
+    student_name: "Sam",\
+    address: "Baroda",\
+    birthdate: new Date("2002-04-20"),\
+    CGPA: 8.5,\
+    fee: 50000,\
+    current_year: "FE",\
+    join_date: new Date("2021-07-01"),\
+    department: "CSE",\
+    skills: ["Programming", "Typing"]\
+  \},\
+  \{\
+    student_id: 2,\
+    student_name: "Mina",\
+    address: "Ahmedabad",\
+    birthdate: new Date("2003-05-15"),\
+    CGPA: 9.0,\
+    fee: 55000,\
+    current_year: "SE",\
+    join_date: new Date("2022-07-01"),\
+    department: "CSE",\
+    skills: ["Typing", "Data Science"]\
+  \},\
+  \{\
+    student_id: 3,\
+    student_name: "Rohan",\
+    address: "Pune",\
+    birthdate: new Date("2001-10-18"),\
+    CGPA: 7.5,\
+    fee: 48000,\
+    current_year: "TE",\
+    join_date: new Date("2020-07-01"),\
+    department: "IT",\
+    skills: ["Database Management", "Coding"]\
+  \},\
+  \{\
+    student_id: 4,\
+    student_name: "Sophia",\
+    address: "Mumbai",\
+    birthdate: new Date("2004-06-22"),\
+    CGPA: 8.7,\
+    fee: 52000,\
+    current_year: "BE",\
+    join_date: new Date("2019-07-01"),\
+    department: "ETC",\
+    skills: ["Electronics", "Communication"]\
+  \},\
+  \{\
+    student_id: 5,\
+    student_name: "Steve",\
+    address: "Delhi",\
+    birthdate: new Date("2005-11-05"),\
+    CGPA: 6.5,\
+    fee: 46000,\
+    current_year: "FE",\
+    join_date: new Date("2023-07-01"),\
+    department: "FE",\
+    skills: ["Communication", "Programming"]\
+  \}\
+]);\
+\
+db.Students.countDocuments();\
+\
+db.Students.find().sort(\{ CGPA: -1 \});\
+\
+db.Students.find(\{\
+  address: \{ $in: ["Baroda", "Ahmedabad"] \},\
+  department: "CSE"\
+\});\
+\
+db.STUDENT.find(\
+  \{\
+    $expr: \{ $eq: [\{ $dayOfMonth: "$birthdate" \}, 20] \}\
+  \},\
+  \{\
+    student_id: 1,\
+    student_name: 1,\
+    department: 1,\
+    Skills: 1\
+  \}\
+);\
+\
+const today = new Date();\
+db.Students.aggregate([\
+  \{\
+    $project: \{\
+      student_name: 1,\
+      age: \{\
+        $divide: [\
+          \{ $subtract: [today, "$birthdate"] \},\
+          1000 * 60 * 60 * 24 * 365 // Converts milliseconds to years\
+        ]\
+      \}\
+    \}\
+  \}\
+]);\
+\
+db.Students.find(\{\
+  student_name: \{ $regex: "^[sSmM]", $options: "i" \},\
+  department: "CSE",\
+  skills: "Typing"\
+\});\
+\
+db.Students.countDocuments(\{ department: "IT", address: "Pune" \});\
+\
+const today = new Date();\
+db.Students.aggregate([\
+  \{\
+    $addFields: \{\
+      age: \{\
+        $dateDiff: \{\
+          startDate: "$birthdate",\
+          endDate: today,\
+          unit: "year"\
+        \}\
+      \}\
+    \}\
+  \},\
+  \{\
+    $match: \{\
+      age: \{ $gte: 18, $lte: 20 \},\
+      department: "ETC"\
+    \}\
+  \},\
+  \{\
+    $sort: \{ student_name: 1 \}\
+  \},\
+  \{\
+    $project: \{\
+      student_name: 1,\
+      age: 1,\
+      _id: 0\
+    \}\
+  \}\
+]);\
+\
+\
+db.Students.createIndex(\{ student_name: 1 \});\
+db.Students.getIndexes();\
+db.Students.dropIndex("student_name_1");\
+\
+db.Students.aggregate([\
+  \{ $group: \{ _id: "$department", total_students: \{ $sum: 1 \} \} \},\
+  \{ $sort: \{ total_students: -1 \} \}\
+]);\
+}

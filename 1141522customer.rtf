@@ -1,0 +1,37 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 db.createCollection("CUSTOMER");\
+db.CUSTOMER.insertMany([\
+  \{ Cust_No: 1001, First_Name: "John", Last_Name: "Doe", Address: "Street 1", City: "Bangalore", State: "KARNATAKA", Pincode: 560001, B_Date: new Date("1985-05-20"), Status: "Married" \},\
+  \{ Cust_No: 1002, First_Name: "Jane", Last_Name: "Smith", Address: "Street 2", City: "Mysore", State: "KARNATAKA", Pincode: 570001, B_Date: new Date("1990-08-15"), Status: "Unmarried" \},\
+  \{ Cust_No: 1003, First_Name: "Raj", Last_Name: "Patil", Address: "Street 3", City: "Pune", State: "MAHARASHTRA", Pincode: 411041, B_Date: new Date("1987-09-10"), Status: "Divorcee" \},\
+  \{ Cust_No: 1004, First_Name: "Sara", Last_Name: "Nair", Address: "Street 4", City: "Kochi", State: "KERALA", Pincode: 682001, B_Date: new Date("1992-12-25"), Status: "Married" \}\
+]);\
+db.CUSTOMER.find(\{ State: "KARNATAKA" \});\
+db.CUSTOMER.deleteOne(\{ Pincode: 576201 \});\
+db.CUSTOMER.updateOne(\
+  \{ Cust_No: 1003 \},\
+  \{\
+    $set: \{\
+      Address: "PICT, Trimurti chowk, Dhankawadi",\
+      Pincode: 411041\
+    \}\
+  \}\
+);\
+db.CUSTOMER.aggregate([\
+  \{ $group: \{ _id: "$Status", Total: \{ $sum: 1 \} \} \}\
+]);\
+db.CUSTOMER.find().sort(\{ City: 1 \});\
+db.CUSTOMER.find(\{ Status: "Married", State: \{ $in: ["KARNATAKA", "KERALA"] \} \});\
+db.CUSTOMER.createIndex(\{ City: 1 \});\
+db.CUSTOMER.getIndexes();\
+db.CUSTOMER.dropIndex("City_1");\
+db.CUSTOMER.aggregate([\
+  \{ $group: \{ _id: "$City", TotalCustomers: \{ $sum: 1 \} \} \},\
+  \{ $sort: \{ TotalCustomers: -1 \} \}\
+]);}

@@ -1,0 +1,219 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 db.createCollection("Orders");\
+\
+db.Orders.insertMany([\
+  \{\
+    order_id: 1,\
+    customer_name: "John Doe",\
+    age: 30,\
+    mob_no: "1234567890",\
+    order_date: new Date("2023-01-15"),\
+    products: [\
+      \{ product_name: "Shoes", quantity: 1 \},\
+      \{ product_name: "T-shirt", quantity: 2 \}\
+    ],\
+    total_quantity: 3\
+  \},\
+  \{\
+    order_id: 2,\
+    customer_name: "Jane Smith",\
+    age: 25,\
+    mob_no: "0987654321",\
+    order_date: new Date("2023-02-10"),\
+    products: [\
+      \{ product_name: "Mobile", quantity: 1 \},\
+      \{ product_name: "Headphones", quantity: 1 \}\
+    ],\
+    total_quantity: 2\
+  \},\
+  \{\
+    order_id: 3,\
+    customer_name: "ABC",\
+    age: 28,\
+    mob_no: "1122334455",\
+    order_date: new Date("2023-03-20"),\
+    products: [\
+      \{ product_name: "Laptop", quantity: 1 \},\
+      \{ product_name: "Shoes", quantity: 1 \}\
+    ],\
+    total_quantity: 2\
+  \}\
+]);\
+\
+db.Orders.find();\
+\
+db.Orders.find().sort(\{ age: 1 \});\
+\
+db.Orders.countDocuments();\
+\
+db.Orders.find(\
+  \{ "products.product_name": "Shoes" \},\
+  \{ mob_no: 1, _id: 0 \}\
+);\
+\
+db.Orders.distinct("customer_name").length;\
+\
+db.Orders.find(\
+  \{ order_id: 2 \},\
+  \{ total_quantity: 1, _id: 0 \}\
+);\
+\
+db.Orders.updateOne(\
+  \{ order_id: 3, customer_name: "ABC" \},\
+  \{\
+    $push: \{ products: \{ product_name: "Notebook", quantity: 2 \} \},\
+    $inc: \{ total_quantity: 2 \}\
+  \}\
+);\
+\
+db.Orders.createIndex(\{ customer_name: 1 \});\
+db.Orders.getIndexes();\
+db.Orders.dropIndex("customer_name_1");\
+\
+db.Orders.aggregate([\
+  \{\
+    $group: \{\
+      _id: "$customer_name",\
+      total_orders: \{ $sum: 1 \}\
+    \}\
+  \},\
+  \{ $sort: \{ total_orders: -1 \} \}\
+]);\
+\
+\
+\
+ORR\
+\
+// Switch to order_management database\
+use order_management\
+\
+// Create Collections and Insert Sample Data\
+// 1. Insert Customers\
+db.customers.insertMany([\
+    \{ "customer_id": 1, "name": "ABC", "age": 25, "mobile": "1234567890" \},\
+    \{ "customer_id": 2, "name": "XYZ", "age": 30, "mobile": "9876543210" \},\
+    \{ "customer_id": 3, "name": "PQR", "age": 22, "mobile": "5555555555" \}\
+])\
+\
+// 2. Insert Products\
+db.products.insertMany([\
+    \{ "product_id": 1, "name": "Shoes", "price": 999 \},\
+    \{ "product_id": 2, "name": "Shirt", "price": 499 \},\
+    \{ "product_id": 3, "name": "Pants", "price": 799 \}\
+])\
+\
+// 3. Insert Orders\
+db.orders.insertMany([\
+    \{\
+        "order_id": 1,\
+        "customer_id": 1,\
+        "products": [\
+            \{ "product_id": 1, "quantity": 1 \},\
+            \{ "product_id": 2, "quantity": 2 \}\
+        ]\
+    \},\
+    \{\
+        "order_id": 2,\
+        "customer_id": 2,\
+        "products": [\
+            \{ "product_id": 1, "quantity": 1 \},\
+            \{ "product_id": 3, "quantity": 1 \}\
+        ]\
+    \},\
+    \{\
+        "order_id": 3,\
+        "customer_id": 1,\
+        "products": [\
+            \{ "product_id": 2, "quantity": 1 \}\
+        ]\
+    \}\
+])\
+\
+// Required Operations:\
+\
+// 1. Retrieve all documents from collections\
+db.customers.find()\
+db.orders.find()\
+db.products.find()\
+\
+// 2. List customers in ascending order of age\
+db.customers.find().sort(\{ age: 1 \})\
+\
+// 3. Display total number of orders\
+db.orders.countDocuments()\
+\
+// 4. Display mobile numbers of customers who purchased Shoes\
+db.customers.find(\{\
+    customer_id: \{\
+        $in: db.orders.distinct("customer_id", \{\
+            "products.product_id": 1\
+        \})\
+    \}\
+\}, \{ mobile: 1, name: 1, _id: 0 \})\
+\
+// 5. Display total number of customers\
+db.customers.countDocuments()\
+\
+// 6. Display total products purchased in order_id:2\
+db.orders.aggregate([\
+    \{ $match: \{ order_id: 2 \} \},\
+    \{ $unwind: "$products" \},\
+    \{ $group: \{\
+        _id: "$order_id",\
+        total_products: \{ $sum: "$products.quantity" \}\
+    \}\}\
+])\
+\
+// 7. Add another product with quantity 2 in order_id:3\
+db.orders.updateOne(\
+    \{ order_id: 3 \},\
+    \{ $push: \{ products: \{ product_id: 3, quantity: 2 \} \} \}\
+)\
+\
+// 8. Index Operations\
+// Create Index\
+db.customers.createIndex(\{ age: 1 \})\
+\
+// Get Indexes\
+db.customers.getIndexes()\
+\
+// Drop Index\
+db.customers.dropIndex("age_1")\
+\
+// 9. Aggregate function for total orders per customer\
+db.orders.aggregate([\
+    \{\
+        $lookup: \{\
+            from: "customers",\
+            localField: "customer_id",\
+            foreignField: "customer_id",\
+            as: "customer_info"\
+        \}\
+    \},\
+    \{ $unwind: "$customer_info" \},\
+    \{\
+        $group: \{\
+            _id: "$customer_id",\
+            customer_name: \{ $first: "$customer_info.name" \},\
+            total_orders: \{ $sum: 1 \}\
+        \}\
+    \}\
+])\
+\
+// Additional Useful Commands:\
+// Drop collections if needed\
+db.customers.drop()\
+db.orders.drop()\
+db.products.drop()\
+\
+// Show all collections\
+show collections\
+\
+// Display current database\
+db}
